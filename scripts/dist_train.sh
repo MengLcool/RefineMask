@@ -9,8 +9,8 @@ export PYTHONPATH=$PROJ_ROOT:$PYTHONPATH
 export OMP_NUM_THREADS=1
 
 WORK_DIR=$3
-PY_ARGS=''
+#PY_ARGS=''
+shift 3
 
 python -m torch.distributed.launch --nproc_per_node=$GPUS --master_port=$PORT \
-    $PROJ_ROOT/tools/train.py $CONFIG --work-dir=${WORK_DIR} --launcher pytorch ${PY_ARGS}
-
+    $PROJ_ROOT/tools/train.py $CONFIG --work-dir=${WORK_DIR} --launcher pytorch "$@"
