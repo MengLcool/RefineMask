@@ -76,7 +76,11 @@ class ConvFCBBoxHead(BBoxHead):
         self.relu = nn.ReLU(inplace=True)
         # reconstruct fc_cls and fc_reg since input channels are changed
         if self.with_cls:
-            self.fc_cls = nn.Linear(self.cls_last_dim, self.num_classes + 1)
+            if self.custom_cls_channels:
+                cls_channels = self.loss_cls.get_cls_channels(self.num_classes)
+            else:
+                cls_channels = self.num_classes + 1
+            self.fc_cls = nn.Linear(self.cls_last_dim, cls_channels)
         if self.with_reg:
             out_dim_reg = (4 if self.reg_class_agnostic else 4 *
                            self.num_classes)

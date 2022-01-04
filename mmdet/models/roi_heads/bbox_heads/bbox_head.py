@@ -151,12 +151,16 @@ class BBoxHead(nn.Module):
         if cls_score is not None:
             avg_factor = max(torch.sum(label_weights > 0).float().item(), 1.)
             if cls_score.numel() > 0:
-                losses['loss_cls'] = self.loss_cls(
+                loss_cls_ = self.loss_cls(
                     cls_score,
                     labels,
                     label_weights,
                     avg_factor=avg_factor,
                     reduction_override=reduction_override)
+                if isinstance(loss_cls_, dict):
+                    losses.update(loss_cls_)
+                else:
+                    losses['loss_cls'] = loss_cls_
                 losses['acc'] = accuracy(cls_score, labels)
         if bbox_pred is not None:
             bg_class_ind = self.num_classes
@@ -332,3 +336,7 @@ class BBoxHead(nn.Module):
             new_rois = torch.cat((rois[:, [0]], bboxes), dim=1)
 
         return new_rois
+
+    @property
+    def custom_cls_channels(self):
+        return getattr(self.loss_cls, 'custom_cls_channels', False)
