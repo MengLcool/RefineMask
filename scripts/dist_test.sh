@@ -13,6 +13,7 @@ CHECKPOINT=$WORK_DIR/latest.pth
 OUT_FILE=$WORK_DIR/result.pkl
 TMP_DIR=$WORK_DIR/tmpdir
 PY_ARGS="--eval bbox segm --out $OUT_FILE --tmpdir $TMP_DIR"
+shift 3
 
 python -m torch.distributed.launch --nproc_per_node=$GPUS --master_port=$PORT \
-    $PROJ_ROOT/tools/test.py $CONFIG $CHECKPOINT --launcher pytorch ${PY_ARGS}
+    $PROJ_ROOT/tools/test.py $CONFIG $CHECKPOINT --launcher pytorch ${PY_ARGS} "$@"
