@@ -199,7 +199,10 @@ class BBoxHead(nn.Module):
                    cfg=None):
         if isinstance(cls_score, list):
             cls_score = sum(cls_score) / float(len(cls_score))
-        scores = F.softmax(cls_score, dim=1) if cls_score is not None else None
+        if self.custom_cls_channels:
+            scores = self.loss_cls.get_activation(cls_score)
+        else :
+            scores = F.softmax(cls_score, dim=1) if cls_score is not None else None
 
         if bbox_pred is not None:
             bboxes = self.bbox_coder.decode(
